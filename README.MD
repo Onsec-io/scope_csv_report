@@ -20,6 +20,8 @@
 
 Также скрипт формирует файлы `./output/nmap_ipv4_targets.txt` и `./output/nmap_ipv6_targets.txt` со списком IP адресов для последующего сканирования, например, nmap.
 
+А также `./output/nmap_networks_v4.txt` и `./output/nmap_networks_v6.txt` со списоком подсетей.
+
 ## Требования
 
 Необходимо зарегистрироваться на сервисах https://ipregistry.co/ и https://apilayer.com для получения ключей API.
