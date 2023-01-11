@@ -10,10 +10,10 @@ end
 def save_as_nmap_targets(data, dst_dir)
   ipv4_addr = data.reject { |x| x[:ip_type] == 'bogon' }.map { |x| x[:ip_addr] }.select { |x| x.match(Resolv::IPv4::Regex) }
   ipv6_addr = data.reject { |x| x[:ip_type] == 'bogon' }.map { |x| x[:ip_addr] }.select { |x| x.match(Resolv::IPv6::Regex) }
-  networks_v4  = data.reject { |x| x[:ip_type] == 'bogon' }.map { |x| x[:network] }.select { |x| x.match(/[.]/) }
-  networks_v6  = data.reject { |x| x[:ip_type] == 'bogon' }.map { |x| x[:network] }.select { |x| x.match(/[:]/) }
-  File.open("#{dst_dir}/nmap_ipv4_targets.txt", 'w') { |f| f.write(ipv4_addr.join("\n")) }
-  File.open("#{dst_dir}/nmap_ipv6_targets.txt", 'w') { |f| f.write(ipv6_addr.join("\n")) }
-  File.open("#{dst_dir}/nmap_networks_v4.txt", 'w') { |f| f.write(networks_v4.join("\n")) }
-  File.open("#{dst_dir}/nmap_networks_v6.txt", 'w') { |f| f.write(networks_v6.join("\n")) }
+  networks_v4  = data.reject { |x| x[:ip_type] == 'bogon' or x[:network].nil? }.map { |x| x[:network] }.select { |x| x.match(/[.]/) }.uniq
+  networks_v6  = data.reject { |x| x[:ip_type] == 'bogon' or x[:network].nil? }.map { |x| x[:network] }.select { |x| x.match(/[:]/) }.uniq
+  File.open("#{dst_dir}/nmap_ipv4_targets.txt", 'w') { |f| f.write(ipv4_addr.join("\n")) }  unless ipv4_addr.empty?
+  File.open("#{dst_dir}/nmap_ipv6_targets.txt", 'w') { |f| f.write(ipv6_addr.join("\n")) }  unless ipv6_addr.empty?
+  File.open("#{dst_dir}/nmap_networks_v4.txt", 'w') { |f| f.write(networks_v4.join("\n")) } unless networks_v4.empty?
+  File.open("#{dst_dir}/nmap_networks_v6.txt", 'w') { |f| f.write(networks_v6.join("\n")) } unless networks_v6.empty?
 end

@@ -136,6 +136,11 @@ uniq_ip_addrs.each do |ip_addr|
   }
 end
 
+if output_data.empty?
+  puts 'No data was collected, check input domain names.'
+  exit 1
+end
+
 save_result_as_csv(output_data, '/opt/output/report.csv')
 save_as_nmap_targets(output_data, '/opt/output')
 
