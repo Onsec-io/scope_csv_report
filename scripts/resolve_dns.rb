@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def resolve_dns(dns_name)
   result = []
   Resolv::DNS.open do |dns|
@@ -20,4 +22,12 @@ def resolve_reverse_dns(ip_addr)
     puts e.inspect
   end
   ptr
+end
+
+def get_ns_records(l2_domain)
+  result = []
+  Resolv::DNS.open do |dns|
+    dns.getresources(l2_domain, Resolv::DNS::Resource::IN::NS).map { |x| result << x.name.to_s }
+  end
+  result
 end

@@ -107,10 +107,13 @@ end
 
 # Stage2. Getting info about L2 domains
 uniq_l2_domains = first_stage_data.map { |x| x[:l2_domain] }.uniq
+
 uniq_l2_domains.each do |l2_domain|
   next if whois_cache[l2_domain]
 
-  whois_cache[l2_domain] = get_whois_info(l2_domain)
+  whois_data = get_whois_info(l2_domain)
+  whois_data[:name_servers] = (whois_data[:name_servers] + get_ns_records(l2_domain)).uniq
+  whois_cache[l2_domain] = whois_data
 end
 
 # Stage3. Sorting data by IP addr
@@ -132,7 +135,8 @@ uniq_ip_addrs.each do |ip_addr|
     l2_domain: ip_data[:l2_domain],
     registrar: whois_cache[ip_data[:l2_domain]][:registrar],
     domain_org: whois_cache[ip_data[:l2_domain]][:org],
-    domain: domains.join("\n")
+    domain: domains.join("\n"),
+    name_servers: whois_cache[ip_data[:l2_domain]][:name_servers].join("\n")
   }
 end
 
@@ -143,5 +147,6 @@ end
 
 save_result_as_csv(output_data, '/opt/output/report.csv')
 save_as_nmap_targets(output_data, '/opt/output')
+save_ns_info(whois_cache, '/opt/output')
 
 puts 'Done. Check output directory'

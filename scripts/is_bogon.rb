@@ -1,35 +1,33 @@
-# encoding: UTF-8
+# frozen_string_literal: true
 
-def is_bogon?(ip_addr)
+def bogon?(ip_addr)
   return true if bogon_check(ip_addr, $bogons_int)
   return true if bogon_check(ip_addr, $real_bogons_int)
   false
 end
 
-
 # The code below was taken from https://gist.github.com/anapsix/8babc0e4a943c8485ca1
 # turning IP to integer for simple comparison
 def ip_to_int(ip)
   ipi = 0
-  ip = ip.to_s if ip.class == IPAddr
-  ip.split(".").reverse.each_with_index { |v, i| ipi += 255**(i)*v.to_i }
+  ip = ip.to_s if ip.instance_of?(IPAddr)
+  ip.split('.').reverse.each_with_index { |v, i| ipi += 255**i * v.to_i }
   ipi
 end
-
 
 # check a suspect ip agains a given range
 def within_range?(suspect, ip)
   # convert suspect to String
-  suspect = suspect.to_s if suspect.class == IPAddr
+  suspect = suspect.to_s if suspect.instance_of?(IPAddr)
 
   if ip.class != Range
     # convert ip to integer range if it is an IPAddr and not Range yet
-    range_int = ip_to_int(ip.to_range.first.to_s)..ip_to_int(ip.to_range.last.to_s) if ip.class == IPAddr
-  elsif ip.class == Range
+    range_int = ip_to_int(ip.to_range.first.to_s)..ip_to_int(ip.to_range.last.to_s) if ip.instance_of?(IPAddr)
+  elsif ip.instance_of?(Range)
     # confirm that ip is a Range of integers
-    range_int = ip if ip.first.class == Integer
+    range_int = ip if ip.first.instance_of?(Integer)
     # convert ip to Range of integers if it's a Range of IPAddr objects
-    range_int = ip_to_int(ip.first.to_s)..ip_to_int(ip.last.to_s) if ip.first.class == IPAddr
+    range_int = ip_to_int(ip.first.to_s)..ip_to_int(ip.last.to_s) if ip.first.instance_of?(IPAddr)
   end
 
   # compare suspect with first and last integer values of integer Range

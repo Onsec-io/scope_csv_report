@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 def get_whois_info(l2_domain)
-  result = { creation_date: '-', registrar: '-', org: '-', name_servers: '-' }
+  result = { creation_date: '-', registrar: '-', org: '-', name_servers: [] }
 
   begin
     uri = URI.parse("https://api.apilayer.com/whois/query?domain=#{l2_domain}")
@@ -14,7 +16,7 @@ def get_whois_info(l2_domain)
     result[:creation_date] = response_json['result']['creation_date']
     result[:registrar]     = response_json['result']['registrar']
     result[:org]           = response_json['result']['org']
-    result[:name_servers]  = response_json['result']['name_servers'].join("\n")
+    result[:name_servers]  = response_json['result']['name_servers'].map { |ns| ns.downcase.gsub(/[.]$/, '') }
   rescue => e
     puts e.inspect
   end

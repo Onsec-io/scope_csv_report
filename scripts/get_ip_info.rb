@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 def get_ip_info(ip_addr)
   result = { asn: '-', network: '-', provider: '-', country: '-', type: '-' }
 
-  return result.merge({ type: 'bogon' }) if ip_addr.match(Resolv::IPv4::Regex) && is_bogon?(ip_addr)
+  return result.merge({ type: 'bogon' }) if ip_addr.match(Resolv::IPv4::Regex) && bogon?(ip_addr)
 
   begin
     uri = URI.parse("https://api.ipregistry.co/#{ip_addr}?key=#{ENV['X_IPREGISTRY_KEY']}")
