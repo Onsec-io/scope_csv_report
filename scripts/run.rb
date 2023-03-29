@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'resolv'
 require 'net/http'
 require 'uri'
@@ -145,6 +147,7 @@ if output_data.empty?
   exit 1
 end
 
+save_debug_data(output_data, "/opt/output/csv_report_debug_#{Time.now.to_i}.yaml") if ENV.key?('DEBUG')
 save_result_as_csv(output_data, '/opt/output/report.csv')
 save_as_nmap_targets(output_data, '/opt/output')
 save_ns_info(whois_cache, '/opt/output')

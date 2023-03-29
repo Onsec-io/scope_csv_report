@@ -13,9 +13,9 @@ def get_whois_info(l2_domain)
     response = http.request(request)
     response_json = JSON.parse(response.body)
 
-    result[:creation_date] = response_json['result']['creation_date']
-    result[:registrar]     = response_json['result']['registrar']
-    result[:org]           = response_json['result']['org']
+    result[:creation_date] = response_json['result']['creation_date'] if response_json['result']['creation_date']
+    result[:registrar]     = response_json['result']['registrar']     if response_json['result']['registrar']
+    result[:org]           = response_json['result']['org']           if response_json['result']['org']
     result[:name_servers]  = response_json['result']['name_servers'].map { |ns| ns.downcase.gsub(/[.]$/, '') }
   rescue => e
     puts e.inspect

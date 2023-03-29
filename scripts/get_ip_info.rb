@@ -17,11 +17,12 @@ def get_ip_info(ip_addr)
 
     return result.merge({ type: 'bogon' }) if response_json['code'] == 'RESERVED_IP_ADDRESS'
 
-    result[:asn]      = response_json['connection']['asn']
-    result[:network]  = response_json['connection']['route']
-    result[:provider] = response_json['connection']['organization']
-    result[:country]  = response_json['location']['country']['name']
-    result[:type]     = response_json['security'].select { |_, v| v == true }.map { |k, _| k }.join("\n")
+    ip_type = response_json['security'].select { |_, v| v == true }.map { |k, _| k }.join("\n")
+    result[:asn]      = response_json['connection']['asn']           if response_json['connection']['asn']
+    result[:network]  = response_json['connection']['route']         if response_json['connection']['route']
+    result[:provider] = response_json['connection']['organization']  if response_json['connection']['organization']
+    result[:country]  = response_json['location']['country']['name'] if response_json['location']['country']['name']
+    result[:type]     = ip_type unless ip_type.empty?
   rescue => e
     puts e.inspect
   end
