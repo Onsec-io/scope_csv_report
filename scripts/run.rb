@@ -118,28 +118,31 @@ uniq_l2_domains.each do |l2_domain|
   whois_cache[l2_domain] = whois_data
 end
 
-# Stage3. Sorting data by IP addr
-uniq_ip_addrs = first_stage_data.map { |x| x[:ip_addr] }.uniq
+# Stage3. Sorting data by L2 domain & IP addr
+uniq_l2_domains.each do |l2_domain|
+  selected_data_by_l2_domain = first_stage_data.select { |x| x[:l2_domain] == l2_domain }
+  uniq_ip_addrs = selected_data_by_l2_domain.map { |x| x[:ip_addr] }.uniq
 
-uniq_ip_addrs.each do |ip_addr|
-  selected_data = first_stage_data.select { |x| x[:ip_addr] == ip_addr }
-  domains = selected_data.map { |x| x[:domain] }
-  ip_data = selected_data.first
+  uniq_ip_addrs.each do |ip_addr|
+    selected_data_by_ip = selected_data_by_l2_domain.select { |x| x[:ip_addr] == ip_addr }
+    domains = selected_data_by_ip.map { |x| x[:domain] }
+    ip_data = selected_data_by_ip.first
 
-  output_data << {
-    asn: ip_data[:asn],
-    ip_addr: ip_addr,
-    ptr: ip_data[:ptr],
-    network: ip_data[:network],
-    provider: ip_data[:provider],
-    country: ip_data[:country],
-    ip_type: ip_data[:ip_type],
-    l2_domain: ip_data[:l2_domain],
-    registrar: whois_cache[ip_data[:l2_domain]][:registrar],
-    domain_org: whois_cache[ip_data[:l2_domain]][:org],
-    domain: domains.join("\n"),
-    name_servers: whois_cache[ip_data[:l2_domain]][:name_servers].join("\n")
-  }
+    output_data << {
+      l2_domain: l2_domain,
+      asn: ip_data[:asn],
+      ip_addr: ip_addr,
+      ptr: ip_data[:ptr],
+      network: ip_data[:network],
+      provider: ip_data[:provider],
+      country: ip_data[:country],
+      ip_type: ip_data[:ip_type],
+      registrar: whois_cache[l2_domain][:registrar],
+      domain_org: whois_cache[l2_domain][:org],
+      domain: domains.join("\n"),
+      name_servers: whois_cache[l2_domain][:name_servers].join("\n")
+    }
+  end
 end
 
 if output_data.empty?

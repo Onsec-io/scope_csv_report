@@ -10,8 +10,8 @@ def save_result_as_csv(data, file_path)
 end
 
 def save_as_nmap_targets(data, dst_dir)
-  ipv4_addr = data.reject { |x| x[:ip_type] == 'bogon' }.map { |x| x[:ip_addr] }.select { |x| x.match(Resolv::IPv4::Regex) }
-  ipv6_addr = data.reject { |x| x[:ip_type] == 'bogon' }.map { |x| x[:ip_addr] }.select { |x| x.match(Resolv::IPv6::Regex) }
+  ipv4_addr = data.reject { |x| x[:ip_type] == 'bogon' }.map { |x| x[:ip_addr] }.select { |x| x.match(Resolv::IPv4::Regex) }.uniq
+  ipv6_addr = data.reject { |x| x[:ip_type] == 'bogon' }.map { |x| x[:ip_addr] }.select { |x| x.match(Resolv::IPv6::Regex) }.uniq
   networks_v4 = data.reject { |x| x[:ip_type] == 'bogon' or x[:network].nil? }.map { |x| x[:network] }.select { |x| x.match(/[.]/) }.uniq
   File.open("#{dst_dir}/nmap_ipv4_targets.txt", 'w') { |f| f.write(ipv4_addr.join("\n")) } unless ipv4_addr.empty?
   File.open("#{dst_dir}/nmap_ipv6_targets.txt", 'w') { |f| f.write(ipv6_addr.join("\n")) } unless ipv6_addr.empty?

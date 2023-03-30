@@ -13,6 +13,11 @@ def get_whois_info(l2_domain)
     response = http.request(request)
     response_json = JSON.parse(response.body)
 
+    if response_json['result'] == 'error'
+      puts "#{l2_domain} - api.apilayer.com error: #{response_json}"
+      return result
+    end
+
     result[:creation_date] = response_json['result']['creation_date'] if response_json['result']['creation_date']
     result[:registrar]     = response_json['result']['registrar']     if response_json['result']['registrar']
     result[:org]           = response_json['result']['org']           if response_json['result']['org']
